@@ -1,6 +1,8 @@
 use actix_web::web;
+use web::Data;
 use crate::errors::errors::{ErrorResponse};
 use crate::handlers::Response;
+use crate::State;
 
 
 pub fn init(cfg: &mut web::ServiceConfig) {
@@ -11,7 +13,10 @@ pub fn init(cfg: &mut web::ServiceConfig) {
 }
 
 
-
-pub(crate) async fn ping_handler() -> Result<Response<&'static str>, ErrorResponse> {
-    Ok( Response::ok("pong"))
+pub(crate) async fn ping_handler(state: Data<State<'_>>) -> Result<Response<String>, ErrorResponse> {
+    if let Ok(row) = state.repo.ping.ping().await {
+        Ok(Response::ok(format!("pong: {}", row)))
+    } else {
+        Err(ErrorResponse::INTERNAL_ERROR)
+    }
 }
