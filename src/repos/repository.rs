@@ -5,7 +5,7 @@ use crate::models::user::User;
 use crate::repos::ping::Ping;
 use crate::repos::table::Table;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Repository<'a> {
     pub users: Arc<Table<'a, User>>,
     pub ping: Arc<Table<'a, Ping>>,
@@ -19,8 +19,6 @@ impl<'a> Repository<'a> {
             .idle_timeout(Duration::new(60, 0))
             .connect_with(PgConnectOptions::new()
 
-                .application_name("user-rs")
-                .port(5432)
             )
             .await.unwrap();
 
